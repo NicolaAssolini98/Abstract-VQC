@@ -33,8 +33,21 @@ class intervalVQC:
                 i[0].clip()
 
 
+    def PauliX(self, n):
+        """
+        Get the Pauli-X gate for the n-th qubit in a quantum circuit with tot_q qubits.
+        :param n: The qubit index.
+        :param tot_q: The total number of qubits in the quantum circuit.
+        :return: The Pauli-X gate for the n-th qubit.
+        """
+        O = qml.matrix(lambda: qml.PauliX(wires=n), wire_order=list(range(self.n_qubit - 1, -1, -1)))()
+        self.state = O @ self.state
+        if self.use_clip:
+            for i in self.state:
+                i[0].clip()
 
-    def c_not(self, n, m):
+
+    def CNOT(self, n, m):
         """
         Get the
         :param n:  Controller index.
@@ -56,8 +69,6 @@ class intervalVQC:
         assert n < self.n_qubit
         r = np.array([[ComplexInterval(imath.cos(theta_int / 2), -(imath.sin(theta_int / 2))), self.zero_int()],
                     [self.zero_int(), ComplexInterval(imath.cos(theta_int / 2), imath.sin(theta_int / 2))]])
-
-
         self.state = (np.kron(np.kron(np.identity(2**(self.n_qubit - 1 - n), dtype=complex), r), np.identity(2 ** n, dtype=complex))) @ self.state
         if self.use_clip:
             for i in self.state:
@@ -68,8 +79,6 @@ class intervalVQC:
         assert n < self.n_qubit
         r = np.array([[ ComplexInterval(imath.cos(theta_int / 2), interval([0,0])), ComplexInterval(interval([0,0]), -imath.sin(theta_int / 2)) ],
                     [ ComplexInterval(interval([0,0]), -imath.sin(theta_int / 2)), ComplexInterval(imath.cos(theta_int / 2), interval([0,0])) ]])
-
-
         self.state = (np.kron(np.kron(np.identity(2**(self.n_qubit - 1 - n), dtype=complex), r), np.identity(2 ** n, dtype=complex))) @ self.state
         if self.use_clip:
             for i in self.state:
@@ -80,8 +89,6 @@ class intervalVQC:
         assert n < self.n_qubit
         r = np.array([[ ComplexInterval(imath.cos(theta_int / 2), interval([0,0])), ComplexInterval(-imath.sin(theta_int / 2), interval([0,0]))],
                     [ ComplexInterval(imath.sin(theta_int / 2), interval([0,0])), ComplexInterval(imath.cos(theta_int / 2), interval([0,0])) ]])
-
-
         self.state = (np.kron(np.kron(np.identity(2**(self.n_qubit - 1 - n), dtype=complex), r), np.identity(2 ** n, dtype=complex))) @ self.state
         if self.use_clip:
             for i in self.state:
@@ -109,7 +116,8 @@ class intervalVQC:
                 result.append((el[0].abs_powered()))
         
         return result
-    
+
+
     def __repr__(self):
         print()
         for i in range(2**self.n_qubit):

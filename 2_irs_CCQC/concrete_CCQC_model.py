@@ -4,17 +4,16 @@ from pennylane import numpy as np
 
 # dev = qml.device("default.qubit", wires=4)
 class concrete_CCQC:
-    def __init__(self, data, weights, bias, layers):
+    def __init__(self, data, weights, bias):
         assert len(data) == 5, "Input data must have 5 features."
         self.weights = weights
         self.input = data
         self.bias = bias
-        self.layer = layers
         self.dev = qml.device("default.qubit", wires=2)
 
     def __call__(self):
         fun = qml.QNode(self.circuit, self.dev)
-        return fun()
+        return fun() + self.bias
 
     def __repr__(self):
         return str(qml.draw(self.circuit, decimals=2)())
@@ -48,24 +47,10 @@ class concrete_CCQC:
                 qml.Rot(*layer_weights[wire], wires=wire)
             qml.CNOT(wires=[0, 1])
 
-
     def circuit(self):
         self.encoding()
         self.ansatz()
 
         return qml.expval(qml.PauliZ(0))
 
-
-
-class abstract_VQC:
-    def __init__(self, weights):
-        self.weights = weights
-        # self.dev = qml.device("default.qubit", wires=4)
-
-    def __call__(self, data):
-    #     # fun = qml.QNode(self.circuit, self.dev)
-         return 1
-
-    def run(self):
-        return self.circuit()
 
