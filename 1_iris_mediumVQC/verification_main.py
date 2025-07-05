@@ -14,27 +14,30 @@ if __name__ == '__main__':
     X_train,X_test,Y_train,Y_test = model_selection.train_test_split(X,Y,test_size=0.33,random_state=42)
 
     # get all the X_test,Y_test with class 0
-    X_test_class0 = X_test[Y_test==1]
+    class_to_verify = 0
+    X_test_class = X_test[Y_test==class_to_verify]
 
     # loading the weights and circuit
     weights = np.load('weights.npy')
 
-
     valid_test = []
-    for test in X_test_class0:
+    for test in X_test_class:
         vqc = concrete_VQC(test, weights)
         # vqc() = P(0) - P(1)
-        if np.sign(vqc()):
+        out = np.sign(vqc())
+        # print(out)
+        valid = out > 0 if class_to_verify == 0 else out < 0
+        if valid:
+            # print('yes')
             valid_test.append(test)
 
     for input_to_verify in valid_test:
         # input_to_verify = valid_test[0]
         # create a perturbation of +- epsilon for the first valid test
-        epsilon = 2/255
-        expected_output = 0
-
+        epsilon = 5/255
+        input_to_verify = np.array(input_to_verify)
         avqc = abstract_VQC(weights)
-        verification_result = verify(avqc, input_to_verify, epsilon, expected_output, max_depth=50, use_mc_attack=False)
+        verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=False)
         print("\nVerification_result: ", verification_result)
         print(f"The quantum circuit with input {input_to_verify} {"is" if verification_result=='safe' else "is not"} robust to {round(epsilon,3)} perturbation!\n")
         if verification_result == 'unsafe': break

@@ -1,32 +1,31 @@
 import pennylane as qml
 from intervalVQC import intervalVQC
-from concrete_CCQC_model import concrete_CCQC
+from concrete_CCQC_iris import concrete_CCQC
 
 # dev = qml.device("default.qubit", wires=4)
 class abstract_CCQC:
-    def __init__(self, weights, bias, layers):
+    def __init__(self, weights, bias):
         self.weights = weights
         self.bias = bias
-        self.layer = layers
         self.ab_circuit = intervalVQC(2, use_clip=True)
 
     def __call__(self, data):
         # encoding
-        self.ab_circuit.Ry(data[0], 0)
+        self.ab_circuit.Ry(0, data[0])
         self.ab_circuit.CNOT(0, 1)
-        self.ab_circuit.Ry(data[1], 1)
+        self.ab_circuit.Ry(1, data[1])
         self.ab_circuit.CNOT(0, 1)
-        self.ab_circuit.Ry(data[2], 1)
+        self.ab_circuit.Ry(1, data[2])
         self.ab_circuit.PauliX(0)
         self.ab_circuit.CNOT(0,1)
-        self.ab_circuit.Ry(data[3], 1)
+        self.ab_circuit.Ry(1, data[3])
         self.ab_circuit.CNOT(0,1)
-        self.ab_circuit.Ry(data[4], 1)
+        self.ab_circuit.Ry(1, data[4])
         self.ab_circuit.PauliX(0)
 
         # ansatz
-        concrete = concrete_CCQC(None, self.weights, None)
-        ansatz_op = concrete.get_ansatz_op()
+        # concrete = concrete_CCQC(None, self.weights, None)
+        ansatz_op = concrete_CCQC.get_ansatz_op(self.weights)
         self.ab_circuit.execute_operator(ansatz_op)
 
         # measurement
@@ -41,6 +40,5 @@ class abstract_CCQC:
             else:
                 prob_1 += result[i]
 
-        return (prob_0, prob_1)
-
+        return prob_0, prob_1 - self.bias
 

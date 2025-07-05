@@ -100,6 +100,7 @@ class intervalVQC:
         Execute a given operator on the current state.
         :param operator: The operator to be applied.
         """
+
         self.state = operator @ self.state
         if self.use_clip:
             for i in self.state:
@@ -110,7 +111,7 @@ class intervalVQC:
         result = []
         if self.use_clip:
             for el in self.state:
-                result.append((el[0].abs_powered() & interval([0.0, 1.0])) *100)
+                result.append((el[0].abs_powered() & interval([0.0, 1.0])))# *100)
         else:
             for el in self.state:
                 result.append((el[0].abs_powered()))

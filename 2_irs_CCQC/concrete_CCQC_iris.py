@@ -5,7 +5,6 @@ from pennylane import numpy as np
 # dev = qml.device("default.qubit", wires=4)
 class concrete_CCQC:
     def __init__(self, data, weights, bias):
-        assert len(data) == 5, "Input data must have 5 features."
         self.weights = weights
         self.input = data
         self.bias = bias
@@ -21,8 +20,12 @@ class concrete_CCQC:
     def __str__(self):
         return self.__repr__()
 
-    def get_ansatz_op(self):
-        return qml.matrix(self.ansatz, wire_order=[0, 1])()
+    @staticmethod
+    def get_ansatz_op(weights):
+        tmp = concrete_CCQC(None, weights, 0)
+        O = qml.matrix(tmp.ansatz, wire_order=[1, 0])()
+        return O
+
 
     def encoding(self):
         qml.RY(self.input[0], wires=0)

@@ -22,8 +22,11 @@ class concrete_VQC:
     def __str__(self):
         return self.__repr__()
 
-    def get_ansatz_op(self):
-        return qml.matrix(self.ansatz, wire_order=[3,2,1,0])()
+    @staticmethod
+    def get_ansatz_op(weights):
+        tmp = concrete_VQC([1,1,1,1], weights)
+        O = qml.matrix(tmp.ansatz, wire_order=[3, 2, 1, 0])()
+        return O #np.asarray(O)
 
     def encoding(self):
         for i in range(len(self.input)):

@@ -19,8 +19,8 @@ class abstract_VQC:
         for i in range(len(data)):
             self.ab_circuit.Rx(i, data[i])
         # ansatz
-        concrete = concrete_VQC([1,1,1,1], self.weights)
-        ansatz_op = concrete.get_ansatz_op()
+        # concrete = concrete_VQC([1,1,1,1], self.weights)
+        ansatz_op = concrete_VQC.get_ansatz_op(self.weights)
         self.ab_circuit.execute_operator(ansatz_op)
         # measurement
         result = self.ab_circuit.get_measurement_interval()
@@ -34,5 +34,5 @@ class abstract_VQC:
             else:
                 prob_1 += result[i]
 
-        return (prob_0, prob_1)
+        return prob_0, prob_1
 

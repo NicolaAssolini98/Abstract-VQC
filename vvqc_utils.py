@@ -18,6 +18,8 @@ def mc_attack(input_interval, avqc, sample_size):
 
     return 'safe'
 
+# P0 - P1 + b > 0 => 0 sse P0 > P1 - b
+# P0 - P1 + b < 0 => 1 sse P0 < P1 - b
 
 def verify_interval(interval_input, avqc, expected_output):
     prob_0, prob_1 = avqc(interval_input)

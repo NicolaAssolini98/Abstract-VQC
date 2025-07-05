@@ -20,7 +20,7 @@ class ComplexInterval:
         return ComplexInterval(self.real*other.real - self.imag*other.imag, self.real*other.imag + self.imag*other.real)
     
     def __rmul__(self, other):
-        assert type(other) == complex
+        # assert type(other) == complex, f"Expected 'complex', got {type(other)}"
 
         return self.__mul__(ComplexInterval(interval([other.real, other.real]), interval([other.imag, other.imag])))
     
