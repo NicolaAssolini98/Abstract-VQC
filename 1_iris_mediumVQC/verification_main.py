@@ -13,7 +13,7 @@ if __name__ == '__main__':
     Y = iris.target[0:100]
     X_train,X_test,Y_train,Y_test = model_selection.train_test_split(X,Y,test_size=0.33,random_state=42)
 
-    # get all the X_test,Y_test with class 0
+    # get all the X_test,Y_test with a class
     class_to_verify = 0
     X_test_class = X_test[Y_test==class_to_verify]
 

@@ -12,9 +12,11 @@ class abstract_CCQC:
     def __call__(self, data):
         # encoding
         for i in range(len(data[0])):
+            print(f"{i}/{len(data[0])-1}")
             self.ab_circuit.hadamard(i)
             # Apply angle embeddings based on the feature values
         for i in range(len(data)):
+            print(f"{i}/{len(data)-1}")
             # For odd-indexed features, use Z-rotation in the angle embedding
             if i % 2:
                 for j in range(len(data[i])):
