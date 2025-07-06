@@ -59,9 +59,14 @@ def iterative_refinement(node, heuristic=['random', 'middle']):
 
 
 def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_attack=False):
-
-
     root = [interval([original_input[i] - epsilon, original_input[i] + epsilon]) for i in range(len(original_input))]
+    # TODO: Original input can be a matrix!!
+    #  Questo funziona, bisogna implementare il refinement con le matrici (oppure mettere un reshape nel modello astratto di 3_digits_CCQC)
+    '''
+    root = np.empty(original_input.shape, dtype=object)
+    for idx, x in np.ndenumerate(original_input):
+        root[idx] = interval([x-epsilon, x + epsilon])
+    '''
 
     frontier = [root]
     next_frontier = []
@@ -96,3 +101,5 @@ def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_
         next_frontier.clear()
 
     return 'unknown'
+
+
