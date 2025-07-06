@@ -40,5 +40,5 @@ class abstract_CCQC:
             else:
                 prob_1 += result[i]
 
-        return prob_0, prob_1 - self.bias
+        return prob_0, prob_1 - self.bias  # We classify as 0 if prob_0 > prob_1 - bias, otherwise as 1
 

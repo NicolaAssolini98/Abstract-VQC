@@ -7,16 +7,17 @@ class abstract_CCQC:
     def __init__(self, weights, bias):
         self.weights = weights
         self.bias = bias
-        self.ab_circuit = intervalVQC(8, use_clip=True)
+        self.num_wires = int(len(self.weights)/2)
+        self.ab_circuit = intervalVQC(self.num_wires, use_clip=True)
 
     def __call__(self, data):
         # encoding
         for i in range(len(data[0])):
-            print(f"{i}/{len(data[0])-1}")
+            # print(f"{i}/{len(data[0])-1}")
             self.ab_circuit.hadamard(i)
             # Apply angle embeddings based on the feature values
         for i in range(len(data)):
-            print(f"{i}/{len(data)-1}")
+            # print(f"{i}/{len(data)-1}")
             # For odd-indexed features, use Z-rotation in the angle embedding
             if i % 2:
                 for j in range(len(data[i])):
@@ -29,7 +30,7 @@ class abstract_CCQC:
                     self.ab_circuit.Rx(j, data[i][j])
         print("Abstract circuit encoding done")
         # ansatz
-        ansatz_op = concrete_CCQC.get_ansatz_op(self.weights)
+        ansatz_op = concrete_CCQC.get_ansatz_op(self.weights, wires=self.num_wires)
         self.ab_circuit.execute_operator(ansatz_op)
 
         # measurement
@@ -44,6 +45,6 @@ class abstract_CCQC:
             else:
                 prob_1 += result[i]
 
-        return prob_0, prob_1 - self.bias
+        return prob_0, prob_1 - self.bias # We classify as 0 if prob_0 > prob_1 - bias, otherwise as 1
 
 

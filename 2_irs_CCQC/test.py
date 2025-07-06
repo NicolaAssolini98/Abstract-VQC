@@ -30,7 +30,7 @@ for _ in range(5):
     # print("-> ",(1-(1-vqc())/2)*100,((1-vqc())/2)*100)
     print("-> ",prediction)
     avqc = abstract_CCQC(weights=weights, bias=bias)
-    eps = 0.1
+    eps = 0
     p0,p1 = avqc([interval([x-eps,x+eps]) for x in X_batched])
     print("-> ",p0, p1)
     print("-> ",p0 - p1)

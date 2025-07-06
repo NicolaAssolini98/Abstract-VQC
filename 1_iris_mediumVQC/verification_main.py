@@ -6,16 +6,20 @@ from abstract_VQC_model import abstract_VQC
 
 
 
-
-if __name__ == '__main__':
+def get_data(class_name):
     iris = datasets.load_iris()
     X = iris.data[0:100]
     Y = iris.target[0:100]
-    X_train,X_test,Y_train,Y_test = model_selection.train_test_split(X,Y,test_size=0.33,random_state=42)
+    X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=0.33, random_state=42)
+
+    return X_test[Y_test==class_name]
+
+
+if __name__ == '__main__':
 
     # get all the X_test,Y_test with a class
     class_to_verify = 0
-    X_test_class = X_test[Y_test==class_to_verify]
+    X_test_class = get_data(class_to_verify)
 
     # loading the weights and circuit
     weights = np.load('weights.npy')
