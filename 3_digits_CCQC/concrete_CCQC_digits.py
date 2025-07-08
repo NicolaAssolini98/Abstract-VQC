@@ -61,6 +61,7 @@ class concrete_CCQC:
 
     def circuit(self):
         self.encoding()
+        qml.Barrier(wires=list(range(self.num_wires)), only_visual=True)
         self.ansatz()
 
         return qml.expval(qml.PauliZ(0))

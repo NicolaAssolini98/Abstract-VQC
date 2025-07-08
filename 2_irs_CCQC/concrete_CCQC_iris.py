@@ -55,5 +55,3 @@ class concrete_CCQC:
         self.ansatz()
 
         return qml.expval(qml.PauliZ(0))
-
-
