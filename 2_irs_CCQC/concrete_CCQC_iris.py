@@ -1,6 +1,5 @@
 
 import pennylane as qml
-from pennylane import numpy as np
 
 # dev = qml.device("default.qubit", wires=4)
 class concrete_CCQC:
@@ -52,6 +51,7 @@ class concrete_CCQC:
 
     def circuit(self):
         self.encoding()
+        qml.Barrier(wires=[0,1], only_visual=True)
         self.ansatz()
 
         return qml.expval(qml.PauliZ(0))

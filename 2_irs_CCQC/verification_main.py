@@ -1,9 +1,12 @@
+import sys
+import os
+# Add parent directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import numpy as np
 from sklearn import model_selection, datasets
 from vvqc_utils import *
 from concrete_CCQC_iris import concrete_CCQC
 from abstract_CCQC_iris import abstract_CCQC
-
 
 
 def get_data(label):
