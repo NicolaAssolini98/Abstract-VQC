@@ -18,6 +18,7 @@ class concrete_VQC:
 
     def __repr__(self):
         return str(qml.draw(self.circuit, decimals=2)())
+        
 
     def __str__(self):
         return self.__repr__()
@@ -53,6 +54,7 @@ class concrete_VQC:
 
     def circuit(self):
         self.encoding()
+        qml.Barrier(wires=[0,1,2,3], only_visual=True)
         self.ansatz()
         return qml.expval(qml.PauliZ(0))
 

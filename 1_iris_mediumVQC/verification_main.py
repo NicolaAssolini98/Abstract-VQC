@@ -1,5 +1,10 @@
 import numpy as np
 from sklearn import model_selection, datasets
+import sys
+import os
+# Add parent directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from vvqc_utils import *
 from concrete_VQC_model import concrete_VQC
 from abstract_VQC_model import abstract_VQC
@@ -35,16 +40,21 @@ if __name__ == '__main__':
             # print('yes')
             valid_test.append(test)
 
-    for input_to_verify in valid_test:
-        # input_to_verify = valid_test[0]
-        # create a perturbation of +- epsilon for the first valid test
-        epsilon = 5/255
+    for input_to_verify in valid_test[:5]:
+    
+    
         input_to_verify = np.array(input_to_verify)
         avqc = abstract_VQC(weights)
-        verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=False)
-        print("\nVerification_result: ", verification_result)
-        print(f"The quantum circuit with input {input_to_verify} {"is" if verification_result=='safe' else "is not"} robust to {round(epsilon,3)} perturbation!\n")
-        if verification_result == 'unsafe': break
+
+        #epsilon = 5/255
+        # verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=False)
+        # print("\nVerification_result: ", verification_result)
+        # print(f"The quantum circuit with input {input_to_verify} {"is" if verification_result=='safe' else "is not"} robust to {round(epsilon,3)} perturbation!\n")
+        # if verification_result == 'unsafe': break
+
+        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001, max_epsilon=1.0, tolerance=1e-4)
+        max_epsilon = round(max_epsilon, 4)
+        print(f'max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
 
 
         
