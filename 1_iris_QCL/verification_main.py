@@ -42,17 +42,20 @@ if __name__ == '__main__':
             valid_test.append(test)
 
 
-    max_epsilons = []
-    for input_to_verify in valid_test[:5]:
+    results = pd.DataFrame(columns=['input', 'max_epsilon'])
+    for idx, input_to_verify in enumerate(valid_test[:5]):
         input_to_verify = np.array(input_to_verify)
         avqc = abstract_VQC(weights)
+        
         print(f"Testing {input_to_verify}:")
         max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001, max_epsilon=1.0, tolerance=1e-4, verbose=False)
         max_epsilon = round(max_epsilon, 4)
-        print(f'  max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
-        max_epsilons.append(max_epsilon)
 
-    print(f'Maximum epsilon for all inputs: {np.mean(np.array(max_epsilons))} +- {np.std(np.array(max_epsilons))}')
+        print(f'  max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
+        results.loc[len(results)] = [input_to_verify.tolist(), max_epsilon]
+
+    results.loc[len(results)] = ['mean', str(results['max_epsilon'].mean()) + "±" + str(results['max_epsilon'].std())]
+    results.to_csv('verification_results.csv', index=False)
 
 
         
