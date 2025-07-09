@@ -8,4 +8,4 @@ pip install crlibm==1.0.3
 pip install pyinterval
 
 
-jax version < 6.0
+jax version ===0.5.3
