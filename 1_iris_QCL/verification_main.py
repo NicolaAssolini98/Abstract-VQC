@@ -2,6 +2,7 @@ import numpy as np
 from sklearn import model_selection, datasets
 import sys
 import os
+import pandas as pd
 # Add parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -40,21 +41,18 @@ if __name__ == '__main__':
             # print('yes')
             valid_test.append(test)
 
+
+    max_epsilons = []
     for input_to_verify in valid_test[:5]:
-    
-    
         input_to_verify = np.array(input_to_verify)
         avqc = abstract_VQC(weights)
-
-        #epsilon = 5/255
-        # verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=False)
-        # print("\nVerification_result: ", verification_result)
-        # print(f"The quantum circuit with input {input_to_verify} {"is" if verification_result=='safe' else "is not"} robust to {round(epsilon,3)} perturbation!\n")
-        # if verification_result == 'unsafe': break
-
-        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001, max_epsilon=1.0, tolerance=1e-4)
+        print(f"Testing {input_to_verify}:")
+        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001, max_epsilon=1.0, tolerance=1e-4, verbose=False)
         max_epsilon = round(max_epsilon, 4)
-        print(f'max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
+        print(f'  max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
+        max_epsilons.append(max_epsilon)
+
+    print(f'Maximum epsilon for all inputs: {np.mean(np.array(max_epsilons))} +- {np.std(np.array(max_epsilons))}')
 
 
         

@@ -60,6 +60,8 @@ def get_data(size, label):
 # print(X_test.shape[0])
 
 if __name__ == '__main__':
+    class_0 = 2
+    class_1 = 6
     num_qubits = 4
     epsilon = 2 / 255
     class_to_verify = 0
@@ -67,7 +69,7 @@ if __name__ == '__main__':
     X_test = get_data(num_qubits, label)
 
     # loading the weights and circuit
-    read_params = np.load(f"variational_params_{num_qubits}.npz")
+    read_params = np.load(f"params/variational_params_{num_qubits}_({class_0}, {class_1}).npz")
     weights = read_params["weights"]
     bias = read_params["bias"]
     params = {"weights": weights, "bias": bias}
@@ -79,14 +81,13 @@ if __name__ == '__main__':
         # vqc() = P(0) - P(1)
         if label == np.sign(vqc()):
             valid_test.append(test)
-    print(valid_test)
 
-    # exit(0)
+    print(f"Number of valid tests: {len(valid_test)}")
     for input_to_verify in valid_test:
         # input_to_verify = valid_test[0]
         # create a perturbation of +- epsilon for the first valid test
         avqc = abstract_CCQC(weights=weights, bias=bias)
-        verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=True)
+        verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=False, verbose=True)
         print("\nVerification_result: ", verification_result)
         print(
             f"The quantum circuit with input {input_to_verify} {"is" if verification_result == 'safe' else "is not"} "

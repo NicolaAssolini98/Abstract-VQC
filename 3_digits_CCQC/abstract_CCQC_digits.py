@@ -1,4 +1,4 @@
-import pennylane as qml
+import numpy as np
 from intervalVQC import intervalVQC
 from concrete_CCQC_digits import concrete_CCQC
 
@@ -11,6 +11,10 @@ class abstract_CCQC:
         self.ab_circuit = intervalVQC(self.num_wires, use_clip=True)
 
     def __call__(self, data):
+        # reshape list of features to a 2D array
+        n = int(len(data) ** 0.5)
+        data = [data[i * n:(i + 1) * n] for i in range(n)]
+
         # encoding
         for i in range(len(data[0])):
             # print(f"{i}/{len(data[0])-1}")
@@ -28,7 +32,7 @@ class abstract_CCQC:
                 for j in range(len(data[i])):
                     # Apply angle embedding for each feature value
                     self.ab_circuit.Rx(j, data[i][j])
-        print("Abstract circuit encoding done")
+        # print("Abstract circuit encoding done")
         # ansatz
         ansatz_op = concrete_CCQC.get_ansatz_op(self.weights, wires=self.num_wires)
         self.ab_circuit.execute_operator(ansatz_op)

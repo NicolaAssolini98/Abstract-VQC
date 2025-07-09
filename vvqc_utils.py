@@ -14,6 +14,7 @@ def mc_attack(input_interval, avqc, output_class, sample_size, verbose=False):
     :return: 'unsafe' if any sample fails verification, 'safe' otherwise
     """
     # Precompute interval bounds for faster sampling
+
     lower_bounds = np.array([iv[0][0] for iv in input_interval])
     upper_bounds = np.array([iv[0][1] for iv in input_interval])
     dim = len(lower_bounds)
@@ -58,7 +59,8 @@ def iterative_refinement(node, heuristic={'node':'random', 'pos': 'middle'}):
     :param heuristic: list of strings, first element is the feature selection heuristic, second element is the split position heuristic
     :return: list of two nodes
     """
-
+    # print(node.shape)
+    # exit(0)
     if heuristic['node'] == 'random':
         feature_to_split = np.random.randint(0, len(node) - 1)
     else:
@@ -79,14 +81,9 @@ def iterative_refinement(node, heuristic={'node':'random', 'pos': 'middle'}):
 
 def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_attack=False, verbose=False):
 
+    original_input = original_input.flatten() if isinstance(original_input, np.ndarray) else original_input
     root = [interval([original_input[i] - epsilon, original_input[i] + epsilon]) for i in range(len(original_input))]
-    # TODO: Original input can be a matrix!!
-    #  Questo funziona, bisogna implementare il refinement con le matrici (oppure mettere un reshape nel modello astratto di 3_digits_CCQC)
-    '''
-    root = np.empty(original_input.shape, dtype=object)
-    for idx, x in np.ndenumerate(original_input):
-        root[idx] = interval([x-epsilon, x + epsilon])
-    '''
+
 
     frontier = [root]
     next_frontier = []
@@ -108,6 +105,7 @@ def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_
             elif verification_result == 'unknown':
                 if use_mc_attack and mc_attack(node, avqc, expected_output, sample_size=100) == 'unsafe':
                     return 'unsafe'
+
                 node_left, node_right = iterative_refinement(node, heuristic={'node':'random', 'pos': 'middle'})
                 next_frontier.append(node_left)
                 next_frontier.append(node_right)
@@ -121,10 +119,11 @@ def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_
 
     return 'unknown'
 
-def compute_maximum_epsilon(avqc, original_input, expected_output, min_epsilon=0.0001, max_epsilon=1, tolerance=1e-4):
+def compute_maximum_epsilon(avqc, original_input, expected_output, min_epsilon=0.0001, max_epsilon=1, tolerance=1e-4, verbose=True):
     """
     Find the maximum epsilon such that the model's output does not change under perturbation of that size.
 
+    :param verbose: print debug information
     :param avqc: verifier object with a method `verify(input, epsilon)` -> bool
     :param original_input: input to test robustness against
     :param expected_output: expected (correct) output of the model
@@ -133,10 +132,9 @@ def compute_maximum_epsilon(avqc, original_input, expected_output, min_epsilon=0
     :param tolerance: precision of the final epsilon value
     :return: maximum tolerated epsilon
     """
-
     # exponential search to find an upper bound where robustness fails
     epsilon = min_epsilon
-    while epsilon <= max_epsilon and verify(avqc, original_input, epsilon, expected_output, max_depth=8, use_mc_attack=False, verbose=True)=='safe':
+    while epsilon <= max_epsilon and verify(avqc, original_input, epsilon, expected_output, max_depth=8, use_mc_attack=False, verbose=verbose)=='safe':
         epsilon *= 2
 
     high = min(epsilon, max_epsilon)
@@ -146,7 +144,7 @@ def compute_maximum_epsilon(avqc, original_input, expected_output, min_epsilon=0
     best_eps = low
     while high - low > tolerance:
         mid = (low + high) / 2
-        if verify(avqc, original_input, mid, expected_output, max_depth=8, use_mc_attack=False,verbose=True)=='safe':
+        if verify(avqc, original_input, mid, expected_output, max_depth=8, use_mc_attack=False,verbose=verbose)=='safe':
             best_eps = mid
             low = mid
         else:

@@ -59,16 +59,20 @@ if __name__ == '__main__':
         if label == np.sign(vqc()):
             valid_test.append(test)
 
-    for input_to_verify in valid_test:
+    for input_to_verify in valid_test[:5]:
         # input_to_verify = valid_test[0]
         # create a perturbation of +- epsilon for the first valid test
         avqc = abstract_CCQC(weights=weights, bias=bias)
-        verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=True)
-        print("\nVerification_result: ", verification_result)
-        print(
-            f"The quantum circuit with input {input_to_verify} {"is" if verification_result == 'safe' else "is not"} "
-            f"robust to {round(epsilon, 3)} perturbation!\n")
-        if verification_result == 'unsafe': break
-
+        # verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=True)
+        # print("\nVerification_result: ", verification_result)
+        # print(
+        #     f"The quantum circuit with input {input_to_verify} {"is" if verification_result == 'safe' else "is not"} "
+        #     f"robust to {round(epsilon, 3)} perturbation!\n")
+        # if verification_result == 'unsafe': break
+        print(f"Testing {input_to_verify}:")
+        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001, max_epsilon=1.0,
+                                              tolerance=1e-4, verbose=False)
+        max_epsilon = round(max_epsilon, 4)
+        print(f'  max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
 
 
