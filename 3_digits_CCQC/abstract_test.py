@@ -18,9 +18,7 @@ def resize_image(images, new_size=(4, 4)):
     return np.array([resize(img, new_size, anti_aliasing=True) for img in images])
 
 
-def get_data(size):
-    class_0 = 2
-    class_1 = 6
+def get_data(size, class_0, class_1):
     # Load the digits dataset with features (X_digits) and labels (y_digits)
     X_digits, y_digits = load_digits(return_X_y=True)
 
@@ -56,23 +54,24 @@ def get_data(size):
 
 
 num_qubits = 4
-read_params = np.load(f"variational_params_{num_qubits}.npz")
-weights = read_params["weights"]
-bias = read_params["bias"]
-params = {"weights": weights, "bias": bias}
 
+for class_0, class_1 in [(0,1), (2,3), (2, 6), (2,8), (3, 7), (8, 1)]:
+    read_params = np.load(f"variational_params_{num_qubits}_({class_0}, {class_1}).npz")
+    weights = read_params["weights"]
+    bias = read_params["bias"]
+    params = {"weights": weights, "bias": bias}
+    print(class_0, class_1)
 
-X_test = get_data(size=4)
-# obtain a random element froom the training set
-print('é normale che ci mette un botto di tempo!')
-for _ in range(5):
-    random_index = np.random.randint(0, X_test.shape[0])
-    print("-> ", X_test[random_index].shape)
-    vqc = concrete_CCQC(data=X_test[random_index], weights=params["weights"], bias=params["bias"])
-    prediction = vqc()
-    print("-> ",prediction)
-    avqc = abstract_CCQC(weights=params["weights"], bias=params["bias"])
-    p,q = avqc(data=X_test[random_index])
-    print("-> ", p-q) # Return P(0) - P(1) + bias
+    X_test = get_data(size=4, class_0=class_0, class_1=class_1)
+    # obtain a random element froom the training set
+    for _ in range(2):
+        random_index = np.random.randint(0, X_test.shape[0])
+        print("-> ", X_test[random_index].shape)
+        vqc = concrete_CCQC(data=X_test[random_index], weights=params["weights"], bias=params["bias"])
+        prediction = vqc()
+        print("-> ",prediction)
+        avqc = abstract_CCQC(weights=params["weights"], bias=params["bias"])
+        p,q = avqc(data=X_test[random_index])
+        print("-> ", p-q) # Return P(0) - P(1) + bias
 
 # print(X_test.shape[0])
