@@ -1,0 +1,24 @@
+Number considered:  0 1
+Training accuracy:  0.9130434782608695
+Testing accuracy:  0.9444444444444444
+----------
+Number considered:  2 3
+Training accuracy:  0.6832298136645962
+Testing accuracy:  0.6111111111111112
+----------
+Number considered:  2 6
+Training accuracy:  0.8354037267080745
+Testing accuracy:  0.7777777777777778
+----------
+Number considered:  2 8
+Training accuracy:  0.7904761904761904
+Testing accuracy:  0.6944444444444444
+----------
+Number considered:  3 7
+Training accuracy:  0.6490683229813664
+Testing accuracy:  0.5945945945945946
+----------
+Number considered:  8 1
+Training accuracy:  0.6761904761904762
+Testing accuracy:  0.6388888888888888
+----------

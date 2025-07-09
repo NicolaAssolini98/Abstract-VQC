@@ -56,7 +56,7 @@ def get_data(size, class_0, class_1):
 num_qubits = 4
 
 for class_0, class_1 in [(0,1), (2,3), (2, 6), (2,8), (3, 7), (8, 1)]:
-    read_params = np.load(f"variational_params_{num_qubits}_({class_0}, {class_1}).npz")
+    read_params = np.load(f"params/variational_params_{num_qubits}_({class_0}, {class_1}).npz")
     weights = read_params["weights"]
     bias = read_params["bias"]
     params = {"weights": weights, "bias": bias}
