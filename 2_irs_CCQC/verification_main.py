@@ -58,12 +58,12 @@ if __name__ == '__main__':
             valid_test.append(test)
 
     results = pd.DataFrame(columns=['input', 'max_epsilon'])
-    for idx, input_to_verify in enumerate(valid_test[:1]):
+    for idx, input_to_verify in enumerate(valid_test[:10]):
         input_to_verify = np.array(input_to_verify)
         avqc = abstract_CCQC(weights=weights, bias=bias)
 
         print(f"Testing {input_to_verify}:")
-        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.1024,
+        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001,
                                               max_epsilon=1.0, tolerance=1e-4, verbose=True)
         max_epsilon = round(max_epsilon, 4)
 

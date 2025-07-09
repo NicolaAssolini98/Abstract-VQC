@@ -20,7 +20,7 @@ print(type(weights))
 
 for _ in range(5):
     # create a random 4 element input vector
-    X_batched = np.random.rand(4)
+    X_batched = [4.8, 3.,  1.4, 0.3]
     # normalize the input vector
     X_batched = X_batched / np.linalg.norm(X_batched)
     # X_batched = [0.1,0.1,0.1,0.1]
@@ -28,7 +28,7 @@ for _ in range(5):
     prediction = vqc()
     print("-> ",((1-(1-vqc())/2),(1-vqc())/2))
     avqc = abstract_VQC(weights=weights)
-    prediction = avqc([interval([x,x]) for x in X_batched])
+    prediction = avqc([interval([x-0.0011,x+0.002]) for x in X_batched])
     print("-> ",prediction)
     print('---')
 

@@ -9,28 +9,28 @@ class abstract_CCQC:
         self.bias = bias
 
     def __call__(self, data):
-        self.ab_circuit = intervalVQC(2, use_clip=True)
+        ab_circuit = intervalVQC(2, use_clip=True)
 
         # encoding
-        self.ab_circuit.Ry(0, data[0])
-        self.ab_circuit.CNOT(0, 1)
-        self.ab_circuit.Ry(1, data[1])
-        self.ab_circuit.CNOT(0, 1)
-        self.ab_circuit.Ry(1, data[2])
-        self.ab_circuit.PauliX(0)
-        self.ab_circuit.CNOT(0,1)
-        self.ab_circuit.Ry(1, data[3])
-        self.ab_circuit.CNOT(0,1)
-        self.ab_circuit.Ry(1, data[4])
-        self.ab_circuit.PauliX(0)
+        ab_circuit.Ry(0, data[0])
+        ab_circuit.CNOT(0, 1)
+        ab_circuit.Ry(1, data[1])
+        ab_circuit.CNOT(0, 1)
+        ab_circuit.Ry(1, data[2])
+        ab_circuit.PauliX(0)
+        ab_circuit.CNOT(0,1)
+        ab_circuit.Ry(1, data[3])
+        ab_circuit.CNOT(0,1)
+        ab_circuit.Ry(1, data[4])
+        ab_circuit.PauliX(0)
 
         # ansatz
         # concrete = concrete_CCQC(None, self.weights, None)
         ansatz_op = concrete_CCQC.get_ansatz_op(self.weights)
-        self.ab_circuit.execute_operator(ansatz_op)
+        ab_circuit.execute_operator(ansatz_op)
 
         # measurement
-        result = self.ab_circuit.get_measurement_interval()
+        result = ab_circuit.get_measurement_interval()
 
         prob_0 = 0
         prob_1 = 0
