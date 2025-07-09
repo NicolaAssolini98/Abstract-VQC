@@ -2,11 +2,10 @@ import sys
 import os
 # Add parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import numpy as np
-from sklearn import model_selection, datasets
 from vvqc_utils import *
 from concrete_CCQC_iris import concrete_CCQC
 from abstract_CCQC_iris import abstract_CCQC
+import pandas as pd
 
 
 def get_data(label):
@@ -42,7 +41,6 @@ def get_angles(x):
 
 
 if __name__ == '__main__':
-    epsilon = 2 / 255
     class_to_verify = 0
     label = 1 if class_to_verify == 0 else -1
     feats_test_class0 = get_data(label)
@@ -59,20 +57,21 @@ if __name__ == '__main__':
         if label == np.sign(vqc()):
             valid_test.append(test)
 
-    for input_to_verify in valid_test[:5]:
-        # input_to_verify = valid_test[0]
-        # create a perturbation of +- epsilon for the first valid test
+    results = pd.DataFrame(columns=['input', 'max_epsilon'])
+    for idx, input_to_verify in enumerate(valid_test[:1]):
+        input_to_verify = np.array(input_to_verify)
         avqc = abstract_CCQC(weights=weights, bias=bias)
-        # verification_result = verify(avqc, input_to_verify, epsilon, class_to_verify, max_depth=50, use_mc_attack=True)
-        # print("\nVerification_result: ", verification_result)
-        # print(
-        #     f"The quantum circuit with input {input_to_verify} {"is" if verification_result == 'safe' else "is not"} "
-        #     f"robust to {round(epsilon, 3)} perturbation!\n")
-        # if verification_result == 'unsafe': break
+
         print(f"Testing {input_to_verify}:")
-        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001, max_epsilon=1.0,
-                                              tolerance=1e-4, verbose=False)
+        max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.1024,
+                                              max_epsilon=1.0, tolerance=1e-4, verbose=True)
         max_epsilon = round(max_epsilon, 4)
+
         print(f'  max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
+        results.loc[len(results)] = [input_to_verify.tolist(), max_epsilon]
+
+    results.loc[len(results)] = ['mean', str(results['max_epsilon'].mean()) + "±" + str(results['max_epsilon'].std())]
+    results.to_csv('verification_results.csv', index=False)
+
 
 

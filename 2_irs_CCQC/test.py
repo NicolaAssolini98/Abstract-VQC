@@ -12,18 +12,18 @@ from interval import *
 warnings.filterwarnings("ignore")
 
 weights = np.load("weights.npy")
-bias = 0.2  # np.load("bias.npy")
+bias = np.load("bias.npy")
 
-for _ in range(5):
-    X_batched = np.random.rand(5)
-    X_batched / np.linalg.norm(X_batched)
+for _ in range(1):
+    X_batched = np.array([0.401, -0.785,  0.785, -0.367,  0.367]) #np.random.rand(5)
+    # X_batched / np.linalg.norm(X_batched)
     vqc = concrete_CCQC(data=X_batched, weights=weights, bias=bias)
 
     prediction = vqc()  # .numpy()
     # print("-> ",(1-(1-vqc())/2)*100,((1-vqc())/2)*100)
     print("-> ", prediction)
     avqc = abstract_CCQC(weights=weights, bias=bias)
-    eps = 0
+    eps = 0.2048
     p0, p1 = avqc([interval([x - eps, x + eps]) for x in X_batched])
     print("-> ", p0, p1)
     print("-> ", p0 - p1)

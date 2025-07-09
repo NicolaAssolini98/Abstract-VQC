@@ -37,7 +37,11 @@ def mc_attack(input_interval, avqc, output_class, sample_size, verbose=False):
 
 def verify_interval(interval_input, avqc, expected_output):
     prob_0, prob_1 = avqc(interval_input)
-
+    # print("input: ", interval_input)
+    # print("   exp out: ", expected_output)
+    # print("   p0:", prob_0, " p1:", prob_1)
+    # print("   ",prob_0 & prob_1)
+    # print("   ",prob_0 > prob_1)
     if prob_0 & prob_1 != interval():
         return 'unknown'
     elif prob_0 > prob_1:
@@ -89,15 +93,22 @@ def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_
     next_frontier = []
     depth = 0
 
+    if verbose:
+        print(f"Epsilon: {epsilon}")
     while depth < max_depth:
         depth += 1
-        if verbose: 
-            print(f"Depth: {depth}/{max_depth}")
+        if verbose:
+            print(f"\tDepth: {depth}/{max_depth}")
             print(f"\tLen frontier: {len(frontier)}")
 
         for node in frontier:
             # def verify_interval(interval_input, avqc, expected_output):
+            # if verbose:
+                # print(f"original input: {original_input}, epsilon: {epsilon}")
             verification_result = verify_interval(interval_input=node, avqc=avqc, expected_output=expected_output)
+            if verbose and depth == max_depth:
+                print(f"\tVerification result: {verification_result}")
+                print('-----')
 
             if verification_result == 'unsafe':
                 return verification_result
@@ -105,12 +116,14 @@ def verify(avqc, original_input, epsilon, expected_output, max_depth=50, use_mc_
             elif verification_result == 'unknown':
                 if use_mc_attack and mc_attack(node, avqc, expected_output, sample_size=100) == 'unsafe':
                     return 'unsafe'
-
+                print(f"\tNode is unknown, refining...")
                 node_left, node_right = iterative_refinement(node, heuristic={'node':'random', 'pos': 'middle'})
                 next_frontier.append(node_left)
                 next_frontier.append(node_right)
+            print(len(next_frontier), "nodes in next frontier")
 
-        if frontier == []:
+
+        if next_frontier == []:
             return 'safe'
 
         frontier.clear()
@@ -136,9 +149,10 @@ def compute_maximum_epsilon(avqc, original_input, expected_output, min_epsilon=0
     epsilon = min_epsilon
     while epsilon <= max_epsilon and verify(avqc, original_input, epsilon, expected_output, max_depth=8, use_mc_attack=False, verbose=verbose)=='safe':
         epsilon *= 2
-
-    high = min(epsilon, max_epsilon)
-    low = epsilon / 2
+    if verbose:
+        print(f"Upper bound found: {epsilon}")
+    high = min(epsilon*2, max_epsilon)
+    low = epsilon
 
     # binary search between low and high
     best_eps = low

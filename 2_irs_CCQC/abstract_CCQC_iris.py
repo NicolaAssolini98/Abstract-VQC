@@ -7,9 +7,10 @@ class abstract_CCQC:
     def __init__(self, weights, bias):
         self.weights = weights
         self.bias = bias
-        self.ab_circuit = intervalVQC(2, use_clip=True)
 
     def __call__(self, data):
+        self.ab_circuit = intervalVQC(2, use_clip=True)
+
         # encoding
         self.ab_circuit.Ry(0, data[0])
         self.ab_circuit.CNOT(0, 1)
