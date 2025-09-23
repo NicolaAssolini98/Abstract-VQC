@@ -26,8 +26,8 @@ def resize_image(images, new_size=(4, 4)):
 
 
 def get_data(size, label):
-    class_0 = 2
-    class_1 = 6
+    class_0 = 0
+    class_1 = 1
     # Load the digits dataset with features (X_digits) and labels (y_digits)
     X_digits, y_digits = load_digits(return_X_y=True)
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     X_test = get_data(num_qubits, label)
 
 
-    for class_0, class_1 in [(0, 1), (2, 6)]:
+    for class_0, class_1 in [(0, 1)]:
         print(f"Verifying for classification between {class_0} and {class_1}")
         # loading the weights and circuit
         read_params = np.load(f"params/variational_params_{num_qubits}_({class_0}, {class_1}).npz")
@@ -94,7 +94,7 @@ if __name__ == '__main__':
             avqc = abstract_CCQC(weights=weights, bias=bias)
 
             print(f"Testing {input_to_verify}:")
-            max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.0001,
+            max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.001,
                                                   max_epsilon=1.0, tolerance=1e-4, verbose=True)
             max_epsilon = round(max_epsilon, 4)
 
