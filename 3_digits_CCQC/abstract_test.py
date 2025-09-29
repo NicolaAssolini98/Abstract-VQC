@@ -73,6 +73,6 @@ for class_0, class_1 in [(0,1), (2,3), (2, 6), (2,8), (3, 7), (8, 1)]:
         avqc = abstract_CCQC(weights=params["weights"], bias=params["bias"])
         x = X_test[random_index].flatten()
         p,q = avqc(data=x)
-        print("-> ", p-q) # Return P(0) - P(1) + bias
+        print("=> ", p-q) # Return P(0) - P(1) + bias
 
 # print(X_test.shape[0])

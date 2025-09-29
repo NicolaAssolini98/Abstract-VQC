@@ -123,9 +123,9 @@ class intervalVQC:
         print()
         for i in range(2**self.n_qubit):
             if i < 10:
-               print(f" {i}: {round(self.state[i][0],3)}")
+               print(f" {i}: {(self.state[i][0])}")
             else:
-                print(f"{i}: {round(self.state[i][0], 3)}")
+                print(f"{i}: {(self.state[i][0])}")
                 
         return ""
     

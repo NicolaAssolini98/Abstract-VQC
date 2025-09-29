@@ -1,5 +1,8 @@
 import pennylane as qml
+import numpy as np
 
+seed = 0
+rng = np.random.default_rng(seed=seed)
 
 class concrete_QCNN:
     def __init__(self, input, weights, last_layer_weights, num_wires=6):
@@ -9,11 +12,12 @@ class concrete_QCNN:
         self.wires = list(range(num_wires))
         self.num_wires = num_wires
         self.layers = weights.shape[1]
-        self.dev = qml.device("default.qubit", wires=num_wires)
+        self.dev = qml.device("default.qubit", wires=6)
 
     def __call__(self):
         fun = qml.QNode(self.circuit, self.dev)
-        return fun() + self.bias
+        # print(np.shape(tmp))
+        return fun()
 
     def __repr__(self):
         return str(qml.draw(self.circuit, decimals=2)())
@@ -22,12 +26,14 @@ class concrete_QCNN:
         return self.__repr__()
 
     @staticmethod
-    def get_ansatz_op(weights, wires=4):
-        tmp = concrete_QCNN(None, weights, 0)
-        O = qml.matrix(tmp.ansatz, wire_order=list(range(wires - 1, -1, -1)))()
+    def get_ansatz_op(weights, last_layer_weights, num_wires=6):
+        tmp = concrete_QCNN(input=None, weights=weights, last_layer_weights=last_layer_weights)
+        O = qml.matrix(tmp.ansatz, wire_order=list(range(num_wires - 1, -1, -1)))()
         return O
 
     def encoding(self):
+        # print(self.input)
+        # print(self.input.shape)
         qml.AmplitudeEmbedding(features=self.input, wires=self.wires, pad_with=0.5)
 
     def convolutional_layer(self, weights, wires, skip_first_layer=True):
@@ -63,10 +69,10 @@ class concrete_QCNN:
 
         for indx, w in enumerate(wires):
             if indx % 2 == 1 and indx < n_wires:
-                m_outcome = qml.measure(w)
-                qml.cond(m_outcome, qml.U3)(*weights, wires=wires[indx - 1])
+                # m_outcome = qml.measure(w)
+                # qml.cond(m_outcome, qml.U3)(*weights, wires=wires[indx - 1])
                 # # Versione deferred:
-                # qml.ctrl(qml.U3, (w), control_values=(1))(*weights, wires=wires[indx - 1])
+                qml.ctrl(qml.U3, (w), control_values=(1))(*weights, wires=wires[indx - 1])
 
     def dense_layer(sef, weights, wires):
         """Apply an arbitrary unitary gate to a specified set of wires."""
@@ -77,14 +83,15 @@ class concrete_QCNN:
 
         for j in range(self.layers):
             """Apply both the convolutional and pooling layer."""
-            self.convolutional_layer(self.weights[:15], wires, skip_first_layer=(not j == 0))
-            self.pooling_layer(self.weights[15:], wires)
+            # self.convolutional_layer(self.weights[:15], wires, skip_first_layer=(not j == 0))
+            # self.pooling_layer(self.weights[15:], wires)
+            self.convolutional_layer(self.weights[:, j][:15], wires, skip_first_layer=(not j == 0))
+            self.pooling_layer(self.weights[:, j][15:], wires)
 
             wires = wires[::2]
             qml.Barrier(wires=wires, only_visual=True)
 
         self.dense_layer(self.last_layer_weights, wires)
-
 
     def circuit(self):
         self.encoding()
@@ -93,4 +100,17 @@ class concrete_QCNN:
 
         return qml.probs(wires=(0))
 
+# if __name__ == "__main__":
+#     import numpy as np
+#
+#     seed = 0
+#     rng = np.random.default_rng(seed=seed)
+#
+#     n_wires = 6
+#
+#     qcnn = concrete_QCNN(weights=np.random.rand(18, 2), last_layer_weights=np.random.rand(4 ** 2 - 1),
+#                          input=np.random.rand(2 ** n_wires), num_wires=n_wires)
+#     print(qcnn)
+#     print('-----------------')
+#     print(qcnn())
 

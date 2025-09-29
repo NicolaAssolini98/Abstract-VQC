@@ -29,6 +29,6 @@ for _ in range(5):
     print("-> ",((1-(1-vqc())/2),(1-vqc())/2))
     avqc = abstract_VQC(weights=weights)
     prediction = avqc([interval([x-0.0011,x+0.002]) for x in X_batched])
-    print("-> ",prediction)
+    print("=> ",prediction)
     print('---')
 
