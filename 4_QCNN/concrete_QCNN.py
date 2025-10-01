@@ -32,9 +32,7 @@ class concrete_QCNN:
         return O
 
     def encoding(self):
-        # print(self.input)
-        # print(self.input.shape)
-        qml.AmplitudeEmbedding(features=self.input, wires=self.wires, pad_with=0.5)
+        qml.AmplitudeEmbedding(features=self.input, wires=self.wires)
 
     def convolutional_layer(self, weights, wires, skip_first_layer=True):
         """Adds a convolutional layer to a circuit.
@@ -82,14 +80,11 @@ class concrete_QCNN:
         wires = self.wires.copy()
 
         for j in range(self.layers):
-            """Apply both the convolutional and pooling layer."""
-            # self.convolutional_layer(self.weights[:15], wires, skip_first_layer=(not j == 0))
-            # self.pooling_layer(self.weights[15:], wires)
             self.convolutional_layer(self.weights[:, j][:15], wires, skip_first_layer=(not j == 0))
             self.pooling_layer(self.weights[:, j][15:], wires)
 
             wires = wires[::2]
-            qml.Barrier(wires=wires, only_visual=True)
+            # qml.Barrier(wires=wires, only_visual=True)
 
         self.dense_layer(self.last_layer_weights, wires)
 
@@ -100,17 +95,10 @@ class concrete_QCNN:
 
         return qml.probs(wires=(0))
 
-# if __name__ == "__main__":
-#     import numpy as np
-#
-#     seed = 0
-#     rng = np.random.default_rng(seed=seed)
-#
-#     n_wires = 6
-#
-#     qcnn = concrete_QCNN(weights=np.random.rand(18, 2), last_layer_weights=np.random.rand(4 ** 2 - 1),
-#                          input=np.random.rand(2 ** n_wires), num_wires=n_wires)
-#     print(qcnn)
-#     print('-----------------')
-#     print(qcnn())
+if __name__ == "__main__":
+    import numpy as np
+
+    w, lw = np.random.rand(18, 2), np.random.rand(4 ** 2 - 1)#, np.random.rand(2 ** n_wires)
+
+    print(concrete_QCNN.get_ansatz_op(w, lw, 6))
 
