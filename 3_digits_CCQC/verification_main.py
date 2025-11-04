@@ -11,7 +11,11 @@ from abstract_CCQC_digits import abstract_CCQC
 import warnings
 from vvqc_utils import *
 import pandas as pd
+import time
 
+
+CLASS_0 = 2 # the class to be verified
+CLASS_1 = 3 # the other class
 
 warnings.filterwarnings("ignore")
 np.random.seed(42)
@@ -26,8 +30,8 @@ def resize_image(images, new_size=(4, 4)):
 
 
 def get_data(size, label):
-    class_0 = 0
-    class_1 = 1
+    class_0 = CLASS_0
+    class_1 = CLASS_1
     # Load the digits dataset with features (X_digits) and labels (y_digits)
     X_digits, y_digits = load_digits(return_X_y=True)
 
@@ -66,12 +70,12 @@ def get_data(size, label):
 
 if __name__ == '__main__':
     num_qubits = 4
-    class_to_verify = 0
-    label = 1 if class_to_verify == 0 else -1
+    class_to_verify = CLASS_0
+    label = 1 if class_to_verify == CLASS_0 else -1
     X_test = get_data(num_qubits, label)
 
 
-    for class_0, class_1 in [(0, 1)]:
+    for class_0, class_1 in [(CLASS_0, CLASS_1)]:
         print(f"Verifying for classification between {class_0} and {class_1}")
         # loading the weights and circuit
         read_params = np.load(f"params/variational_params_{num_qubits}_({class_0}, {class_1}).npz")
@@ -88,18 +92,21 @@ if __name__ == '__main__':
                 valid_test.append(test)
 
 
-        results = pd.DataFrame(columns=['input', 'max_epsilon'])
+        results = pd.DataFrame(columns=['input', 'max_epsilon', 'time'])
         for idx, input_to_verify in enumerate(valid_test[:5]):
             input_to_verify = np.array(input_to_verify)
             avqc = abstract_CCQC(weights=weights, bias=bias)
 
             print(f"Testing {input_to_verify}:")
+            start_time = time.time()
             max_epsilon = compute_maximum_epsilon(avqc, input_to_verify, class_to_verify, min_epsilon=0.001,
                                                   max_epsilon=1.0, tolerance=1e-4, verbose=True)
+            end_time = time.time()
             max_epsilon = round(max_epsilon, 4)
-
+            time_taken = end_time - start_time
             print(f'  max ε perturbation tolerate for input {input_to_verify} is: ', max_epsilon)
-            results.loc[len(results)] = [input_to_verify.tolist(), max_epsilon]
+            print(f"  Time taken: {time_taken:.2f} seconds")
+            results.loc[len(results)] = [input_to_verify.tolist(), max_epsilon, time_taken]
 
-        results.loc[len(results)] = ['mean', str(results['max_epsilon'].mean()) + "±" + str(results['max_epsilon'].std())]
+        results.loc[len(results)] = ['mean', str(results['max_epsilon'].mean()) + "±" + str(results['max_epsilon'].std()), results['time'].mean()]
         results.to_csv(f'verification_results_({class_0},{class_1}).csv', index=False)
