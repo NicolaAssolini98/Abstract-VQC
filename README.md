@@ -1,6 +1,6 @@
-# interval_pennylane
+# Abstract VQC
 
-Lightweight utilities and experiments that use interval arithmetic with PennyLane to verify robustness of Variational Quantum Classifiers (VQCs).
+Lightweight utilities and experiments that use interval arithmetic with PennyLane to verify the robustness of Variational Quantum Classifiers (VQCs).
 
 This repository accompanies a paper presenting a formal framework for robustness verification of VQCs; the manuscript is available on arXiv: https://arxiv.org/abs/2507.10635
 
@@ -23,7 +23,7 @@ Or install core packages with pip (adjust versions as needed):
 pip install numpy pandas scipy seaborn matplotlib pennylane
 ```
 
-Wrong versionsing may cause issues with interval arithmetic library, we report the versions we used for development and testing:
+Wrong versioning may cause issues with `pyinterval`. We report the versions we used for development and testing:
 
 ```cmd
 pip install setuptools==69.2.0
