@@ -14,7 +14,6 @@ def mc_attack(input_interval, avqc, output_class, sample_size, verbose=False):
     :return: 'unsafe' if any sample fails verification, 'safe' otherwise
     """
     # Precompute interval bounds for faster sampling
-
     lower_bounds = np.array([iv[0][0] for iv in input_interval])
     upper_bounds = np.array([iv[0][1] for iv in input_interval])
     dim = len(lower_bounds)
@@ -32,16 +31,11 @@ def mc_attack(input_interval, avqc, output_class, sample_size, verbose=False):
 
     return 'safe'
 
-# P0 - P1 + b > 0 => 0 sse P0 > P1 - b
-# P0 - P1 + b < 0 => 1 sse P0 < P1 - b
+# P0 - P1 + b > 0 => 0 iff P0 > P1 - b
+# P0 - P1 + b < 0 => 1 iff P0 < P1 - b
 
 def verify_interval(interval_input, avqc, expected_output):
     prob_0, prob_1 = avqc(interval_input)
-    # print("input: ", interval_input)
-    # print("   exp out: ", expected_output)
-    # print("   p0:", prob_0, " p1:", prob_1)
-    # print("   ",prob_0 & prob_1)
-    # print("   ",prob_0 > prob_1)
     if prob_0 & prob_1 != interval():
         return 'unknown'
     elif prob_0 > prob_1:
@@ -63,8 +57,6 @@ def iterative_refinement(node, heuristic={'node':'random', 'pos': 'middle'}):
     :param heuristic: list of strings, first element is the feature selection heuristic, second element is the split position heuristic
     :return: list of two nodes
     """
-    # print(node.shape)
-    # exit(0)
     if heuristic['node'] == 'random':
         feature_to_split = np.random.randint(0, len(node) - 1)
     else:

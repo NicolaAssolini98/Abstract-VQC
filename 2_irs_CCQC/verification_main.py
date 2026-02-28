@@ -49,7 +49,6 @@ if __name__ == '__main__':
     weights = np.load('weights.npy')
     bias = np.load('bias.npy')
 
-    ##############################################
     valid_test = []
     for test in feats_test_class0:
         vqc = concrete_CCQC(data=test, weights=weights, bias=bias)

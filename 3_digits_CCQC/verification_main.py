@@ -83,7 +83,6 @@ if __name__ == '__main__':
         bias = read_params["bias"]
         params = {"weights": weights, "bias": bias}
 
-        ##############################################
         valid_test = []
         for test in X_test:
             vqc = concrete_CCQC(data=test, weights=params["weights"], bias=params["bias"])
