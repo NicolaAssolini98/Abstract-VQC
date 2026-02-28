@@ -2,7 +2,7 @@
 
 Lightweight utilities and experiments that use interval arithmetic with PennyLane to verify the robustness of Variational Quantum Classifiers (VQCs).
 
-This repository accompanies a paper presenting a formal framework for robustness verification of VQCs; the manuscript is available on arXiv: https://arxiv.org/abs/2507.10635
+This repository accompanies a paper presenting a formal framework for robustness verification of VQCs; the paper is available on arXiv: https://arxiv.org/abs/2507.10635
 
 ### Quick structure
 - Top-level scripts: `complex_interval.py`, `intervalVQC.py`, `vvqc_utils.py`.
