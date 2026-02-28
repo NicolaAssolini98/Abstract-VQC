@@ -1,4 +1,4 @@
-# Abstract VQC
+# Abstract VQC Analysis
 
 Lightweight utilities and experiments that use interval arithmetic with PennyLane to verify the robustness of Variational Quantum Classifiers (VQCs).
 
